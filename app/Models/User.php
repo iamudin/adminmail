@@ -45,4 +45,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function domains()
+    {
+        return $this->hasMany(Domain::class);
+    }
+    public function isAdmin()
+    {
+        return $this->level === 'admin';
+    }
+    public function isPersandian()
+    {
+        return $this->level === 'persandian';
+    }
+
+    public function isDomain()
+    {
+        return $this->level === 'domain';
+    }
 }
