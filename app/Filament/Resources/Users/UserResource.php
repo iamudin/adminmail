@@ -27,6 +27,11 @@ class UserResource extends Resource
         return UserForm::configure($schema);
     }
 
+    public static function canAccess(): bool
+    {
+        return false;
+    }
+
     public static function table(Table $table): Table
     {
         return UsersTable::configure($table);

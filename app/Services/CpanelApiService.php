@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Http;
 
 class CpanelApiService
 {
-    protected $baseUrl;
-    protected $token;
-    protected $username;
+    protected string $baseUrl;
+    protected string $token;
+    protected string $username;
 
     public function __construct()
     {
@@ -17,7 +17,7 @@ class CpanelApiService
         $this->username = config('cpanel.username'); // nama user cPanel
     }
 
-    private function request($endpoint, $params = [])
+    private function request(string $endpoint, $params = [])
     {
         $response = Http::withHeaders([
             'Authorization' => "cpanel {$this->username}:{$this->token}"
@@ -36,7 +36,7 @@ class CpanelApiService
         return $result['data'] ?? [];
     }
 
-    public function createEmail($email, $password, $quota = 250)
+    public function createEmail(string $email, string $password, $quota = 250)
     {
         $user = explode('@', $email)[0];
         $domain = explode('@', $email)[1];
@@ -49,7 +49,7 @@ class CpanelApiService
         ]);
     }
 
-    public function deleteEmail($email)
+    public function deleteEmail(string $email)
     {
         $user = explode('@', $email)[0];
         $domain = explode('@', $email)[1];
@@ -60,7 +60,7 @@ class CpanelApiService
         ]);
     }
 
-    public function changePassword($email, $password)
+    public function changePassword(string $email, string $password)
     {
         $user = explode('@', $email)[0];
         $domain = explode('@', $email)[1];

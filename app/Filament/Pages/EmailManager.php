@@ -10,6 +10,8 @@ use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Services\CpanelApiService;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -18,6 +20,29 @@ class EmailManager extends Page implements Tables\Contracts\HasTable
     use Tables\Concerns\InteractsWithTable;
     protected  string $view = 'filament.pages.email-manager';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
+
+    protected static function getPasswordForm(): array
+    {
+        return [
+            Forms\Components\TextInput::make('password')
+                ->password()
+                ->required()
+                ->revealable()
+                ->live()
+                ->rule(Password::min(12)->letters()->mixedCase()->numbers()->symbols())
+                ->suffixAction(
+                    Action::make('generatePassword')
+                        ->icon('heroicon-m-key')
+                        ->tooltip('Generate Password')
+                        ->action(function ($set) {
+                            $password = Str::random(16) . '!@#$';
+                            $password = str_shuffle($password);
+                            $set('password', $password);
+                        })
+                ),
+        ];
+    }
+
     public function table(Table $table): Table
     {
       
@@ -33,7 +58,7 @@ class EmailManager extends Page implements Tables\Contracts\HasTable
                     ->label('Tambah Email')
                     ->form([
                         Forms\Components\TextInput::make('email')->required(),
-                        Forms\Components\TextInput::make('password')->password()->required(),
+                        ...self::getPasswordForm(),
                         Forms\Components\TextInput::make('quota')->numeric()->default(250),
                     ])
                     ->action(fn ($data) => (new CpanelApiService())->createEmail(
@@ -42,9 +67,7 @@ class EmailManager extends Page implements Tables\Contracts\HasTable
             ])
             ->actions([
               Action::make('changePassword')
-                    ->form([
-                        Forms\Components\TextInput::make('password')->password()->required(),
-                    ])
+                    ->form(self::getPasswordForm())
                     ->action(fn ($data, $record) => (new CpanelApiService())->changePassword(
                         $record['email'], $data['password']
                     )),

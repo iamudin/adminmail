@@ -33,7 +33,10 @@ class DnsManager extends Page implements HasTable
     {
         $this->service = app(CloudflareService::class);
     }
-
+    public static function canAccess(): bool
+    {
+        return false;
+    }
     public static function formSchema(): array
     {
         return [
